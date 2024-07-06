@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4"
+         xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
+    <servlet>
+        <servlet-name>helloServlet</servlet-name>
+        <servlet-class>com.github.ljl.jerrymouse.servlet.HelloServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>helloServlet</servlet-name>
+        <url-pattern>/hello</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>writerServlet</servlet-name>
+        <servlet-class>com.github.ljl.jerrymouse.servlet.WriterServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>writerServlet</servlet-name>
+        <url-pattern>/test/writer</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>OutputStreamServlet</servlet-name>
+        <servlet-class>com.github.ljl.jerrymouse.servlet.OutputStreamServlet</servlet-class>
+        <init-param>
+            <param-name>param1</param-name>
+            <param-value>10</param-value>
+        </init-param>
+        <init-param>
+            <param-name>param2</param-name>
+            <param-value>value2</param-value>
+        </init-param>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>OutputStreamServlet</servlet-name>
+        <url-pattern>/test/output-stream</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>RequestApiServlet</servlet-name>
+        <servlet-class>com.github.ljl.jerrymouse.servlet.RequestApiServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>RequestApiServlet</servlet-name>
+        <url-pattern>/test/request-api</url-pattern>
+    </servlet-mapping>
+
+</web-app>
