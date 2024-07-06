@@ -1,17 +1,14 @@
 package com.github.ljl.jerrymouse.support.servlet.dispatcher;
 
 import com.github.ljl.jerrymouse.support.context.ApplicationContext;
-import com.github.ljl.jerrymouse.support.servlet.request.JerryMouseRequest;
 import com.github.ljl.jerrymouse.support.servlet.response.JerryMouseResponse;
 import com.github.ljl.jerrymouse.utils.HttpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
