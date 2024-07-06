@@ -1,6 +1,5 @@
 package com.github.ljl.jerrymouse.support.servlet.request;
 
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,9 +26,16 @@ public class RequestParser {
      */
     public static Map<String, String[]> parseQueryParams(String msg) {
         String[] lines = msg.split("\r\n");
+        // GET /test/request-api?key1=value1&key2=value2 HTTP/1.1
         String queryString = lines[0];
         String[] parts = queryString.split("\\?");
         String params = parts.length > 1 ? parts[1] : queryString;  // 获取参数部分
+        // key1=value1&key2=value2 HTTP/1.1
+        int lastIndex = params.lastIndexOf(" ");
+        if (lastIndex != -1) {
+            params = params.substring(0, lastIndex);
+        }
+
         Map<String, List<String>> paramMap = new HashMap<>();
         String[] queryParams = params.split("&");
         for (String queryParam : queryParams) {
@@ -77,6 +83,10 @@ public class RequestParser {
         return headers;
     }
 
+    /**
+     * @param msg whole request message
+     * @param data requestData to save method and uri
+     */
     public static void parseRequestLine(String msg, RequestData data) {
         String[] requestLines = msg.split("\r\n");
         // 获取第一行请求行, 解析method和uri

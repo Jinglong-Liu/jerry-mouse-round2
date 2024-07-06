@@ -1,6 +1,5 @@
 package com.github.ljl.jerrymouse.support.servlet.request;
 
-import com.github.ljl.jerrymouse.server.nio.handler.SocketWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,12 +7,10 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @program: jerry-mouse-round2
@@ -30,7 +27,7 @@ public class JerryMouseRequest implements HttpServletRequest {
     private ServletContext servletContext;
 
     public JerryMouseRequest(String message, ServletContext servletContext) {
-        this.requestData =new  RequestData(message);
+        this.requestData = new  RequestData(message);
         this.servletContext = servletContext;
     }
     @Override
@@ -45,27 +42,27 @@ public class JerryMouseRequest implements HttpServletRequest {
 
     @Override
     public long getDateHeader(String name) {
-        return 0;
+        return requestData.getDateHeader(name);
     }
 
     @Override
     public String getHeader(String name) {
-        return null;
+        return requestData.getHeader(name);
     }
 
     @Override
     public Enumeration<String> getHeaders(String name) {
-        return null;
+        return requestData.getHeaders(name);
     }
 
     @Override
     public Enumeration<String> getHeaderNames() {
-        return null;
+        return requestData.getHeaderNames();
     }
 
     @Override
     public int getIntHeader(String name) {
-        return 0;
+        return requestData.getIntHeader(name);
     }
 
     @Override
@@ -195,62 +192,62 @@ public class JerryMouseRequest implements HttpServletRequest {
 
     @Override
     public Object getAttribute(String name) {
-        return null;
+        return requestData.getAttribute(name);
     }
 
     @Override
     public Enumeration<String> getAttributeNames() {
-        return null;
+        return requestData.getAttributeNames();
     }
 
     @Override
     public String getCharacterEncoding() {
-        return null;
+        return requestData.getCharacterEncoding();
     }
 
     @Override
-    public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
-
+    public void setCharacterEncoding(String charset) throws UnsupportedEncodingException {
+        requestData.setCharacterEncoding(charset);
     }
 
     @Override
     public int getContentLength() {
-        return 0;
+        return requestData.getContentLength();
     }
 
     @Override
     public long getContentLengthLong() {
-        return 0;
+        return requestData.getContentLengthLong();
     }
 
     @Override
     public String getContentType() {
-        return null;
+        return requestData.getContentType();
     }
 
     @Override
-    public ServletInputStream getInputStream() throws IOException {
-        return null;
+    public ServletInputStream getInputStream() {
+        return requestData.getInputStream();
     }
 
     @Override
     public String getParameter(String name) {
-        return null;
+        return requestData.getParameter(name);
     }
 
     @Override
     public Enumeration<String> getParameterNames() {
-        return null;
+        return requestData.getParameterNames();
     }
 
     @Override
     public String[] getParameterValues(String name) {
-        return new String[0];
+        return requestData.getParameterValues(name);
     }
 
     @Override
     public Map<String, String[]> getParameterMap() {
-        return null;
+        return requestData.getParameterMap();
     }
 
     @Override
@@ -270,12 +267,12 @@ public class JerryMouseRequest implements HttpServletRequest {
 
     @Override
     public int getServerPort() {
-        return 0;
+        return 8888;
     }
 
     @Override
     public BufferedReader getReader() throws IOException {
-        return null;
+        return new BufferedReader(new InputStreamReader(getInputStream()));
     }
 
     @Override
@@ -290,12 +287,12 @@ public class JerryMouseRequest implements HttpServletRequest {
 
     @Override
     public void setAttribute(String name, Object o) {
-
+        requestData.setAttribute(name, o);
     }
 
     @Override
-    public void removeAttribute(String name) {
-
+    public void removeAttribute(String s) {
+        requestData.removeAttribute(s);
     }
 
     @Override
@@ -375,6 +372,6 @@ public class JerryMouseRequest implements HttpServletRequest {
 
     @Override
     public DispatcherType getDispatcherType() {
-        return null;
+        return DispatcherType.REQUEST;
     }
 }

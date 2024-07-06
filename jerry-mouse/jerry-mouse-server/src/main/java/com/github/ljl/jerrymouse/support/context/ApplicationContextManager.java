@@ -1,6 +1,9 @@
 package com.github.ljl.jerrymouse.support.context;
 
 import com.github.ljl.jerrymouse.servlet.HelloServlet;
+import com.github.ljl.jerrymouse.servlet.OutputStreamServlet;
+import com.github.ljl.jerrymouse.servlet.RequestApiServlet;
+import com.github.ljl.jerrymouse.servlet.WriterServlet;
 
 /**
  * @program: jerry-mouse-round2
@@ -15,6 +18,9 @@ public class ApplicationContextManager {
     static {
         applicationContext = new ApplicationContext();
         applicationContext.registerServlet("/hello", new HelloServlet());
+        applicationContext.registerServlet("/test/writer", new WriterServlet());
+        applicationContext.registerServlet("/test/output-stream", new OutputStreamServlet());
+        applicationContext.registerServlet("/test/request-api", new RequestApiServlet());
     }
     public static ApplicationContext getApplicationContext() {
         return applicationContext;
