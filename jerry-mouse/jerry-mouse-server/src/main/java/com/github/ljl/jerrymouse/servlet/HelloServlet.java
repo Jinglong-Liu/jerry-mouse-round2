@@ -2,6 +2,8 @@ package com.github.ljl.jerrymouse.servlet;
 
 import com.github.ljl.jerrymouse.support.servlet.response.JerryMouseResponse;
 import com.github.ljl.jerrymouse.utils.HttpUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,11 +19,13 @@ import java.io.IOException;
  **/
 
 public class HelloServlet extends HttpServlet {
+    private static Logger logger = LoggerFactory.getLogger(HelloServlet.class);
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         if (resp instanceof JerryMouseResponse) {
             JerryMouseResponse response = (JerryMouseResponse) resp;
             response.getSockerWriter().write(HttpUtils.http200Resp("Hello servlet!"));
         }
+        logger.info("Hello servlet");
     }
 }

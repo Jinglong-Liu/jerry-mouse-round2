@@ -1,6 +1,7 @@
 package com.github.ljl.jerrymouse.support.context;
 
 import com.github.ljl.jerrymouse.exception.MethodNotSupportException;
+import com.github.ljl.jerrymouse.support.servlet.manager.FilterManager;
 import com.github.ljl.jerrymouse.support.servlet.manager.ServletManager;
 import lombok.Setter;
 
@@ -34,6 +35,8 @@ public class ApplicationContext implements ServletContext {
     private HttpServletResponse response;
 
     private ServletManager servletManager = new ServletManager();
+
+    private FilterManager filterManager = new FilterManager();
 
     private Map<String, String> initParameterMap = new HashMap<>();
 
@@ -344,5 +347,12 @@ public class ApplicationContext implements ServletContext {
     }
     public void registerServlet(String uri, HttpServlet httpServlet) {
         servletManager.register(uri, httpServlet);
+    }
+
+    public List<Filter> getMatchFilters(String urlPattern) {
+        return filterManager.getMatchFilters(urlPattern);
+    }
+    public void registerFilter(String urlPattren, Filter filter) {
+        filterManager.register(urlPattren, filter);
     }
 }
