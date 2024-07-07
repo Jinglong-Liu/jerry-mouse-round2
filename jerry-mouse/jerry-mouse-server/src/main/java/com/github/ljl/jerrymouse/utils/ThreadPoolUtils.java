@@ -19,6 +19,8 @@ import java.util.concurrent.*;
 
 public class ThreadPoolUtils {
 
+    private static CustomThreadPool threadPool = new CustomThreadPool();
+
     public static Executor newFixedThreadPool(int nThreads, String name) {
         return Executors.newFixedThreadPool(nThreads, new NamedThreadFactory(name));
     }
@@ -49,6 +51,37 @@ public class ThreadPoolUtils {
         }
         private int nextCount(int count) {
             return (count + 1) % maxThreadCount;
+        }
+    }
+
+    static void execute(Runnable runnable)  {
+        threadPool.execute(runnable);
+    }
+
+    private static class CustomThreadPool {
+        private int corePoolSize = 4;       // 核心线程数
+        private int maximumPoolSize = 100;  // 最大线程数
+        private long keepAliveTime = 60L;   // 线程空闲时间
+        private TimeUnit unit = TimeUnit.SECONDS; // 时间单位
+        private BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(100); // 任务队列
+        private ThreadPoolExecutor executor;
+        CustomThreadPool() {
+            executor = new ThreadPoolExecutor(
+                    corePoolSize,
+                    maximumPoolSize,
+                    keepAliveTime,
+                    unit,
+                    workQueue,
+                    new NamedThreadFactory("pool-1-thread"),
+                    new ThreadPoolExecutor.CallerRunsPolicy()
+            );
+        }
+
+        void execute(Runnable runnable) {
+            executor.execute(runnable);
+        }
+        void shutdown() {
+            executor.shutdown();
         }
     }
 }

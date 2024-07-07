@@ -64,10 +64,16 @@ public class ReadChannelHandler implements ChannelHandler, PipeLineHandler, Clos
             }
             logger.debug("receive request message:\n{}", message);
             // till now, there is only one application, one context
-            ServletContext servletContext = ApplicationContextManager.getApplicationContext();
-            HttpServletRequest request = new JerryMouseRequest(message, servletContext);
+
+            // 通过URL查找到对应的context
+
+            JerryMouseRequest request = new JerryMouseRequest(message);
+            ServletContext servletContext = ApplicationContextManager.getApplicationContext(request);
             // client can use response to write data, so the socketWrite is necessary
             HttpServletResponse response = new JerryMouseResponse(this, servletContext);
+
+            request.setServletContext(servletContext);
+
             RequestDispatcherContext dispatcherContext = new RequestDispatcherContext(request, response);
             // then, only focus on this
             RequestDispatcher.get().dispatch(dispatcherContext);

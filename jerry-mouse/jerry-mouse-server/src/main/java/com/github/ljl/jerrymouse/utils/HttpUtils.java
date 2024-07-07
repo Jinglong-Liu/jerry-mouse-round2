@@ -3,6 +3,8 @@ package com.github.ljl.jerrymouse.utils;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static javax.servlet.http.HttpServletResponse.*;
 
@@ -55,23 +57,24 @@ public class HttpUtils {
         if (StringUtils.isEmptyTrim(charset)) {
             return oldContentType;
         }
-        String contextType = null;
-        int charsetIndex = oldContentType.indexOf("charset=");
-        if (charsetIndex != -1) {
-            // 替换已有的charset参数
-            int endIndex = oldContentType.indexOf(';', charsetIndex);
-            if (endIndex == -1) {
-                endIndex = oldContentType.length();
-            }
-            StringBuilder sb = new StringBuilder(oldContentType);
-            sb.replace(charsetIndex + "charset=".length(), endIndex, oldContentType);
-            contextType = sb.toString();
-        } else {
-            // 没有找到charset参数，添加新的charset参数
-            StringBuilder sb = new StringBuilder(oldContentType);
-            sb.append("; charset=").append(charset);
-            contextType = sb.toString();
+        if (StringUtils.isEmptyTrim(oldContentType)) {
+            return "text/plain; charset=" + charset;
         }
+        String contextType;
+
+        // 检查是否已经包含 charset=xxx
+        String pattern = "charset=[^;]*";
+        Pattern charsetPattern = java.util.regex.Pattern.compile(pattern);
+        Matcher matcher = charsetPattern.matcher(oldContentType);
+
+        if (matcher.find()) {
+            // 如果已经包含 charset=xxx，则替换
+            contextType =  matcher.replaceAll("charset=" + charset);
+        } else {
+            // 如果不包含 charset=xxx，则添加
+            contextType = oldContentType + "; charset=" + charset;
+        }
+
         return contextType;
     }
     public static String extractCharacterEncoding(String contentType) {

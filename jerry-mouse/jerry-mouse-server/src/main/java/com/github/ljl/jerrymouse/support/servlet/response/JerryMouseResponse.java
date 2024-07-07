@@ -10,6 +10,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotNull;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -41,7 +42,7 @@ public class JerryMouseResponse implements HttpServletResponse {
 
     private final ServletOutputStream outputStream;
 
-    public JerryMouseResponse(SocketWriter sockerWriter, ServletContext servletContext) {
+    public JerryMouseResponse(@NotNull SocketWriter sockerWriter, @NotNull ServletContext servletContext) {
         this.sockerWriter = sockerWriter;
         this.servletContext = servletContext;
         this.responseData = new ResponseData();
