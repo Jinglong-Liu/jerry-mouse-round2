@@ -1,5 +1,6 @@
 package com.github.ljl.jerrymouse.support.context;
 
+import com.github.ljl.jerrymouse.exception.MethodNotSupportException;
 import com.github.ljl.jerrymouse.support.servlet.manager.ServletManager;
 import lombok.Setter;
 
@@ -24,6 +25,8 @@ public class ApplicationContext implements ServletContext {
 
     private Set<Servlet> servlets = new HashSet<>();
 
+    private String appName;
+
     @Setter
     private HttpServletRequest request;
 
@@ -32,12 +35,14 @@ public class ApplicationContext implements ServletContext {
 
     private ServletManager servletManager = new ServletManager();
 
-    public ApplicationContext() {
+    private Map<String, String> initParameterMap = new HashMap<>();
 
+    public ApplicationContext(String appName) {
+        this.appName = appName;
     }
     @Override
     public String getContextPath() {
-        return null;
+        return appName;
     }
 
     @Override
@@ -137,17 +142,21 @@ public class ApplicationContext implements ServletContext {
 
     @Override
     public String getInitParameter(String name) {
-        return null;
+        return initParameterMap.get(name);
     }
 
     @Override
     public Enumeration<String> getInitParameterNames() {
-        return null;
+        return Collections.enumeration(initParameterMap.keySet());
     }
 
     @Override
     public boolean setInitParameter(String name, String value) {
-        return false;
+        if (initParameterMap.containsKey(name)) {
+            return false;
+        }
+        initParameterMap.put(name, value);
+        return true;
     }
 
     @Override

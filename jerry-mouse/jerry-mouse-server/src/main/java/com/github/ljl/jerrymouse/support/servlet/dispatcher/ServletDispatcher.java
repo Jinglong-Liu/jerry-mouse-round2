@@ -32,7 +32,7 @@ public class ServletDispatcher implements IDispatcher {
         try {
             httpServlet.service(request, response);
         } catch (NullPointerException e) {
-            logger.error("Servlet not found!");
+            logger.error("Servlet not found! uri = {}", request.getRequestURI());
             response.getSockerWriter().write(HttpUtils.http404Resp());
         } catch (ServletException | IOException e) {
             logger.error("Server meet error when do servlet Service");

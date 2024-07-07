@@ -1,5 +1,7 @@
 package com.github.ljl.jerrymouse.support.servlet.request;
 
+import com.github.ljl.jerrymouse.support.context.ApplicationContext;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,11 +26,11 @@ public class JerryMouseRequest implements HttpServletRequest {
 
     private RequestData requestData;
 
+    @Setter
     private ServletContext servletContext;
 
-    public JerryMouseRequest(String message, ServletContext servletContext) {
+    public JerryMouseRequest(String message) {
         this.requestData = new  RequestData(message);
-        this.servletContext = servletContext;
     }
     @Override
     public String getAuthType() {
