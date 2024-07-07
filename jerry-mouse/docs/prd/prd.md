@@ -2,6 +2,7 @@
 
 | 版本号 | 发布日期       | 变更内容                                  | 负责人 |
 |-----|------------|---------------------------------------|-----|
+| 1.6 | 2024-07-08 | 添加 [jerry-mouse prd06.md](./prd06.md) | ljl |
 | 1.5 | 2024-07-07 | 添加 [jerry-mouse prd05.md](./prd05.md) | ljl |
 | 1.4 | 2024-07-06 | 添加 [jerry-mouse prd04.md](./prd04.md) | ljl |
 | 1.3 | 2024-07-06 | 添加 [jerry-mouse prd03.md](./prd03.md) | ljl |
@@ -28,6 +29,7 @@
 - 提供 最基本的 HTTP 请求处理和响应功能。
 - 支持基本的 HTTP 协议功能（GET、POST、PUT、DELETE）。
 - 同时支持多个war包运行
+- 支持Filter的使用
 
 #### 3.2 Spring MVC 支持
 
