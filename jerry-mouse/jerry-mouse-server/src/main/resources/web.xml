@@ -52,4 +52,23 @@
         <url-pattern>/test/request-api</url-pattern>
     </servlet-mapping>
 
+
+    <filter>
+        <filter-name>helloFilter</filter-name>
+        <filter-class>com.github.ljl.jerrymouse.servlet.HelloFilter</filter-class>
+        <init-param>
+            <param-name>filter-param1</param-name>
+            <param-value>filter-value1</param-value>
+        </init-param>
+        <init-param>
+            <param-name>filter-param2</param-name>
+            <param-value>filter-value2</param-value>
+        </init-param>
+    </filter>
+    <!--剔除/web-demo/-->
+    <filter-mapping>
+        <filter-name>helloFilter</filter-name>
+        <url-pattern>/.*</url-pattern>
+    </filter-mapping>
+
 </web-app>
