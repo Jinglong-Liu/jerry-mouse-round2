@@ -2,6 +2,7 @@ package com.github.ljl.jerrymouse.support.servlet.dispatcher;
 
 import com.github.ljl.jerrymouse.support.context.ApplicationContext;
 import com.github.ljl.jerrymouse.support.servlet.FilterChainWrapper;
+import com.github.ljl.jerrymouse.support.servlet.request.JerryMouseRequest;
 import com.github.ljl.jerrymouse.support.servlet.response.JerryMouseResponse;
 import com.github.ljl.jerrymouse.utils.HttpUtils;
 import io.netty.handler.codec.http.HttpRequest;
@@ -49,5 +50,6 @@ public class ServletDispatcher implements IDispatcher {
     private void filter(HttpServlet httpServlet, ServletRequest request, ServletResponse response, List<Filter> filterList) throws ServletException, IOException {
         FilterChain chain = new FilterChainWrapper(filterList, httpServlet);
         chain.doFilter(request, response);
+        ((JerryMouseRequest)request).destroy();
     }
 }
