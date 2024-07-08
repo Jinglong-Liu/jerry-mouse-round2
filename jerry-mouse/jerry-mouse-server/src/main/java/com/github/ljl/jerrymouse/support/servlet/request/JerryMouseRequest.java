@@ -26,11 +26,10 @@ public class JerryMouseRequest implements HttpServletRequest {
 
     private RequestData requestData;
 
-    @Setter
     private ServletContext servletContext;
 
     public JerryMouseRequest(String message) {
-        this.requestData = new  RequestData(message);
+        this.requestData = new  RequestData(this, message);
     }
     @Override
     public String getAuthType() {
@@ -375,5 +374,19 @@ public class JerryMouseRequest implements HttpServletRequest {
     @Override
     public DispatcherType getDispatcherType() {
         return DispatcherType.REQUEST;
+    }
+
+    public void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
+        init();
+    }
+    public void init() {
+        ApplicationContext applicationContext = (ApplicationContext) servletContext;
+        applicationContext.initializeRequest(this);
+    }
+
+    public void destroy() {
+        ApplicationContext applicationContext = (ApplicationContext) this.servletContext;
+        applicationContext.destroyRequest(this);
     }
 }
