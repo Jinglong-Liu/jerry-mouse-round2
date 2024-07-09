@@ -1,5 +1,6 @@
 package com.github.ljl.jerrymouse.utils;
 
+import com.github.ljl.jerrymouse.exception.MethodNotSupportException;
 import com.github.ljl.jerrymouse.support.classloader.LocalClassLoader;
 import com.github.ljl.jerrymouse.support.classloader.WebApplicationClassLoader;
 import com.github.ljl.jerrymouse.support.context.ApplicationContext;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.Filter;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.SessionTrackingMode;
 import javax.servlet.http.HttpServlet;
 import java.io.File;
 import java.io.FileInputStream;
@@ -119,6 +121,7 @@ public class XmlUtils {
         loadServletFromWebXml(appName, document, classLoader);
         loadFilterFromWebXml(appName, document, classLoader);
         loadListenerFromWebXml(appName, document);
+        loadSessionConfigFromWebXml(appName, document);
         applicationContext.initializeServletContextListeners();
     }
     private static void loadContextFromWebXml(String appName, Document document) {
@@ -266,6 +269,80 @@ public class XmlUtils {
             }
         } catch (Exception e) {
             logger.error("load listener from web.xml failed", e);
+            e.printStackTrace();
+        }
+    }
+
+    private static void loadSessionConfigFromWebXml(String appName, Document document) {
+        /**
+         *     <session-config>
+         *         <session-timeout>1</session-timeout>
+         *         <cookie-config>
+         *             <name>JSESSIONID</name>
+         *             <path>/</path>
+         *         </cookie-config>
+         *         <tracking-mode>COOKIE</tracking-mode>
+         *     </session-config>
+         */
+        try {
+            ApplicationContext applicationContext = ApplicationContextManager.getApplicationContext(appName);
+
+            Element rootElement = document.getRootElement();
+            List<Element> sessionConfigs = rootElement.elements("session-config");
+
+            if (sessionConfigs.size() >= 2) {
+                logger.error("only support one session-config in this version");
+                throw new MethodNotSupportException("only support one session-config in this version");
+            }
+            for (Element sessionConfig : sessionConfigs) {
+                String sessionTimeout = sessionConfig.elementText("session-timeout");
+
+                /**
+                 * default session timeout 单位分钟，<= 0 无限时
+                 */
+                if (StringUtils.notEmpty(sessionTimeout)) {
+                    int timeout = Integer.parseInt(sessionTimeout);
+                    applicationContext.setSessionTimeout(timeout);
+                }
+
+                /**
+                 * 目前只支持COOKIE模式跟踪
+                 */
+                String trackingMode = sessionConfig.elementText("tracking-mode");
+                if (StringUtils.notEmpty(trackingMode)) {
+                    if ("COOKIE".equalsIgnoreCase(trackingMode)) {
+                        Set<SessionTrackingMode> sessionTrackingModes = Collections.singleton(SessionTrackingMode.COOKIE);
+                        applicationContext.setSessionTrackingModes(sessionTrackingModes);
+                    } else {
+                        logger.error("not support tracking mode:{}", trackingMode);
+                        throw new MethodNotSupportException("not support tracking mode:" + trackingMode);
+                    }
+                }
+                /**
+                 * cookie-config配置
+                 */
+                Element cookieConfig = sessionConfig.element("cookie-config");
+                if (Objects.nonNull(cookieConfig)) {
+                    /**
+                     * sessionId 对应的 name
+                     */
+                    String name = cookieConfig.elementText("name");
+                    if (StringUtils.notEmpty(name)) {
+                        applicationContext.setSessionIdFieldName(name);
+                    }
+
+                    /**
+                     * 目前只支持一个app共用一个session-config
+                     */
+                    String path = cookieConfig.elementText("path");
+                    if (StringUtils.notEmpty(path) && ! "/".equalsIgnoreCase(path)) {
+                        logger.error("Not support other path match session-config, only '/' in this version");
+                        throw new IllegalStateException("unsupported path ");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("load session config from web.xml failed", e);
             e.printStackTrace();
         }
     }

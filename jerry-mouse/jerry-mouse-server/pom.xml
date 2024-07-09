@@ -59,6 +59,12 @@
             <version>${javax.validation.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>${net.bytebuddy.byte-buddy.id}</version>
+        </dependency>
+
     </dependencies>
 
 </project>
