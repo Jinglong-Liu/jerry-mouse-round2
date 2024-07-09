@@ -15,6 +15,9 @@ public class StringUtils {
     public static boolean isEmpty(String s) {
         return Objects.isNull(s) || s.length() == 0;
     }
+    public static boolean notEmpty(String s) {
+        return !isEmpty(s);
+    }
 
     /**
      * 是否为空-进行 trim 之后

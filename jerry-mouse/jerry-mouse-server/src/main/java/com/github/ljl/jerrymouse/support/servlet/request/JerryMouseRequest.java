@@ -38,7 +38,7 @@ public class JerryMouseRequest implements HttpServletRequest {
 
     @Override
     public Cookie[] getCookies() {
-        return new Cookie[0];
+        return requestData.getCookies();
     }
 
     @Override
@@ -83,7 +83,7 @@ public class JerryMouseRequest implements HttpServletRequest {
 
     @Override
     public String getContextPath() {
-        return null;
+        return servletContext.getContextPath();
     }
 
     @Override
@@ -128,22 +128,22 @@ public class JerryMouseRequest implements HttpServletRequest {
 
     @Override
     public HttpSession getSession(boolean create) {
-        return null;
+        return requestData.getSession(create);
     }
 
     @Override
     public HttpSession getSession() {
-        return null;
+        return requestData.getSession();
     }
 
     @Override
     public String changeSessionId() {
-        return null;
+        return requestData.changeSessionId();
     }
 
     @Override
     public boolean isRequestedSessionIdValid() {
-        return false;
+        return requestData.isRequestedSessionIdValid();
     }
 
     @Override
@@ -253,7 +253,7 @@ public class JerryMouseRequest implements HttpServletRequest {
 
     @Override
     public String getProtocol() {
-        return null;
+        return requestData.getProtocol();
     }
 
     @Override

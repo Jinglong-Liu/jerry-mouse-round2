@@ -4,16 +4,17 @@ import com.github.ljl.jerrymouse.exception.MethodNotSupportException;
 import com.github.ljl.jerrymouse.support.servlet.manager.FilterManager;
 import com.github.ljl.jerrymouse.support.servlet.manager.ListenerManager;
 import com.github.ljl.jerrymouse.support.servlet.manager.ServletManager;
-import io.netty.handler.codec.http.HttpRequest;
+import com.github.ljl.jerrymouse.support.servlet.manager.SessionManager;
+import com.github.ljl.jerrymouse.support.servlet.session.HttpSessionWrapper;
+import com.github.ljl.jerrymouse.support.servlet.session.SessionTaskManager;
+import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.*;
 import javax.servlet.descriptor.JspConfigDescriptor;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -44,15 +45,30 @@ public class ApplicationContext implements ServletContext {
     @Setter
     private HttpServletResponse response;
 
+    @Setter
+    @Getter
+    private String sessionIdFieldName = "JSESSIONID";
+
+    private int sessionTimeoutMinute = -1;
+
+    /**
+     * 暂时只支持COOKIE方式
+     */
+    private Set<SessionTrackingMode> sessionTrackingModes = EnumSet.of(SessionTrackingMode.COOKIE);
+
     private final ServletManager servletManager = new ServletManager();
 
     private final FilterManager filterManager = new FilterManager();
 
     private final ListenerManager listenerManager = new ListenerManager();
 
+    private final SessionManager sessionManager = new SessionManager();
+
     private final Map<String, String> initParameterMap = new HashMap<>();
 
     private final Map<String, Object> attributesMap = new ConcurrentHashMap<>();
+
+    private final SessionTaskManager sessionTaskManager = SessionTaskManager.get();
 
     public ApplicationContext(String appName, ClassLoader classLoader) {
         this.appName = appName;
@@ -307,17 +323,33 @@ public class ApplicationContext implements ServletContext {
 
     @Override
     public void setSessionTrackingModes(Set<SessionTrackingMode> sessionTrackingModes) {
-
+        if (Objects.isNull(sessionTrackingModes) || sessionTrackingModes.isEmpty()) {
+            this.sessionTrackingModes.clear();
+            return;
+        }
+        if (sessionTrackingModes.size() > 1 || !sessionTrackingModes.contains(SessionTrackingMode.COOKIE)) {
+            logger.error("Not support other sessionTrackMode: only COOKIE in this version");
+            throw new MethodNotSupportException("Not support other sessionTrackMode: only COOKIE in this version");
+        }
+        this.sessionTrackingModes = sessionTrackingModes;
     }
 
+    /**
+     * 包括所有
+     * @return
+     */
     @Override
     public Set<SessionTrackingMode> getDefaultSessionTrackingModes() {
-        return null;
+        return EnumSet.of(SessionTrackingMode.COOKIE);
     }
 
+    /**
+     * web.xml配置 或者 set进去
+     * @return
+     */
     @Override
     public Set<SessionTrackingMode> getEffectiveSessionTrackingModes() {
-        return null;
+        return sessionTrackingModes;
     }
 
     @Override
@@ -381,12 +413,15 @@ public class ApplicationContext implements ServletContext {
 
     @Override
     public int getSessionTimeout() {
-        return 0;
+        return sessionTimeoutMinute;
     }
 
+    /**
+     * @param sessionTimeout 分钟
+     */
     @Override
     public void setSessionTimeout(int sessionTimeout) {
-
+        this.sessionTimeoutMinute = sessionTimeout;
     }
 
     @Override
@@ -439,6 +474,10 @@ public class ApplicationContext implements ServletContext {
         this.getListenersByType(ServletRequestListener.class).forEach(listener -> {
             listener.requestDestroyed(new ServletRequestEvent(this, request));
         });
+        HttpSessionWrapper session = (HttpSessionWrapper) ((HttpServletRequest)request).getSession(false);
+        if (Objects.nonNull(session)) {
+            session.updateLastAccessedTime();
+        }
     }
     // ServletRequestAttributeListener
     public void requestAttributeAdded(ServletRequest request, String name, Object object) {
@@ -455,6 +494,50 @@ public class ApplicationContext implements ServletContext {
         this.getListenersByType(ServletRequestAttributeListener.class).forEach(listener -> {
             listener.attributeReplaced(new ServletRequestAttributeEvent(this, request, name, value));
         });
+    }
+
+    // HttpSessionListener
+    public void sessionCreated(HttpSessionWrapper session) {
+        // 加入
+        sessionManager.addSession(session);
+        sessionTaskManager.sessionCreated(session);
+        this.getListenersByType(HttpSessionListener.class).forEach(listener -> {
+            listener.sessionCreated(new HttpSessionBindingEvent(session, session.getId()));
+        });
+    }
+
+    public void sessionDestroyed(HttpSessionWrapper session) {
+        sessionManager.removeSession(session.getId());
+        this.getListenersByType(HttpSessionListener.class).forEach(listener -> {
+            listener.sessionDestroyed(new HttpSessionBindingEvent(session, session.getId()));
+        });
+    }
+
+    // HttpSessionAttributeListener
+    public void sessionAttributeAdded(HttpSession session, String name, Object value) {
+        this.getListenersByType(HttpSessionAttributeListener.class).forEach(listener -> {
+            listener.attributeAdded(new HttpSessionBindingEvent(session, name, value));
+        });
+    }
+
+    public void sessionAttributeRemoved(HttpSession session, String name, Object value) {
+        this.getListenersByType(HttpSessionAttributeListener.class).forEach(listener -> {
+            listener.attributeRemoved(new HttpSessionBindingEvent(session, name, value));
+        });
+    }
+
+    public void sessionAttributeReplaced(HttpSession session, String name, Object value) {
+        this.getListenersByType(HttpSessionAttributeListener.class).forEach(listener -> {
+            listener.attributeReplaced(new HttpSessionBindingEvent(session, name, value));
+        });
+    }
+
+    public HttpSession findSession(String sessionId) {
+        return sessionManager.getSession(sessionId);
+    }
+
+    public void changeSessionId(HttpSession session, String oldId) {
+        sessionManager.changeSessionId(session, oldId);
     }
     private <T extends EventListener> List<T> getListenersByType(Class<T> eventType) {
         return listenerManager.getListeners()
