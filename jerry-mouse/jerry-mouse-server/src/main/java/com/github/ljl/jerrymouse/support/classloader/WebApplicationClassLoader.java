@@ -11,6 +11,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -21,6 +22,7 @@ import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
 
 /**
  * @program: jerry-mouse-round2
@@ -32,7 +34,7 @@ import java.util.stream.Collectors;
 public class WebApplicationClassLoader extends URLClassLoader {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private final ClassLoader parent;
-    private final String baseDir;
+    private String baseDir;
     private final Path classPath;
     private final List<Path> jarPaths;
 
@@ -47,6 +49,10 @@ public class WebApplicationClassLoader extends URLClassLoader {
         super(urls, parent);
         this.parent = parent;
         this.baseDir = urls[0].getPath();
+        // windows
+        if (baseDir.startsWith("/") && System.getProperty("os.name").toLowerCase().contains("win")) {
+            baseDir = baseDir.substring(1);
+        }
         this.classPath =  Paths.get(FileUtils.buildFullPath(baseDir,  "/WEB-INF/classes/"));
         Path libPath = Paths.get(FileUtils.buildFullPath(baseDir,  "/WEB-INF/lib/"));
         if(FileUtils.exists(libPath.toFile().getAbsolutePath())) {
@@ -93,7 +99,6 @@ public class WebApplicationClassLoader extends URLClassLoader {
         // Convert class name to file path
         String classFile = className.replace('.', '/') + ".class";
         Path classFilePath = classPath.resolve(classFile);
-
         if (Files.exists(classFilePath)) {
             try {
                 byte[] classData = Files.readAllBytes(classFilePath);
@@ -123,6 +128,96 @@ public class WebApplicationClassLoader extends URLClassLoader {
         logger.warn("Class " + className + "not found");
         return null;
     }
+
+    private List<URL> findURLFromJarPath(String name) {
+        List<URL> resources = new ArrayList<>();
+        try {
+            for (Path jarPath : jarPaths) {
+                URL jarUrl = jarPath.toUri().toURL();
+                try (JarFile jarFile = ((JarURLConnection) new URL("jar:" + jarUrl + "!/").openConnection()).getJarFile()) {
+                    ZipEntry entry = jarFile.getEntry(name);
+                    if (entry != null) {
+                        /**
+                         * 形如
+                         * jar:file:/D:/java-learning/jerry-mouse/src/test/webapps/springmvc-app1/WEB-INF/lib/spring-web-5.3.3.jar!/org/springframework/web/context/ContextLoader.properties
+                         */
+                        resources.add(new URL("jar:" + jarUrl + "!/" + name));
+                    }
+                }
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return resources;
+    }
+
+    @Override
+    public URL getResource(String name) {
+        URL url = super.getResource(name);
+        if (Objects.nonNull(url)) {
+            return url;
+        }
+        try {
+            // 1. 查找 classPath 目录
+            Path resourcePath = Paths.get(FileUtils.buildFullPath(classPath.toFile().getAbsolutePath(), name));
+            if (Files.exists(resourcePath)) {
+                return resourcePath.toUri().toURL();
+            }
+
+            // 2.查找baseDir
+            Path rootPath = Paths.get(FileUtils.buildFullPath(baseDir, name));
+            if (Files.exists(rootPath)) {
+                return rootPath.toUri().toURL();
+            }
+
+            // 3. 查找jar
+            List<URL> jarURL = findURLFromJarPath(name);
+            if (!jarURL.isEmpty()) {
+                return jarURL.get(0);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // 如果没有找到，返回 null
+        // 添加父类加载器的资源
+        System.out.println("resource not found!!! " + name);
+        return null;
+    }
+
+    @Override
+    public Enumeration<URL> getResources(String name) throws IOException {
+        // class
+        List<URL> resources = getClassesDirResources(name);
+
+        resources.addAll(Collections.list(super.getResources(name)));
+
+
+        // add jar file: very important!!!
+        /**
+         * including springmvc project:
+         * \META-INF\spring.schemas
+         * \META-INF\spring.handlers
+         */
+
+        resources.addAll(findURLFromJarPath(name));
+
+        File directory = new File(this.baseDir, name);
+        if (directory.exists()) {
+            if (directory.isDirectory()) {
+                resources.addAll(findResourcesInDirectory(directory));
+            } else if (directory.isFile()){
+                resources.add(directory.toURI().toURL());
+            }
+        } else {
+            System.out.println(directory.getAbsolutePath() + " NOT exist!!!");
+        }
+        return Collections.enumeration(resources);
+    }
+
 
     private List<URL> findResourcesInDirectory(File dir) throws IOException {
         List<URL> resources = new ArrayList<>();

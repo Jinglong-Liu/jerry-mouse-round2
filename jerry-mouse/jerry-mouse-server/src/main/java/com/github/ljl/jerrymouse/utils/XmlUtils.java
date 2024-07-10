@@ -88,6 +88,7 @@ public class XmlUtils {
     }
     public static void parseAppWebXml(File appDir) throws MalformedURLException {
 
+        // url: file:/D:/xxx/xxx
         URL url = appDir.toURI().toURL();
         // 构造对应app的
         ClassLoader classLoader = new WebApplicationClassLoader(new URL[]{url}, new LocalClassLoader());

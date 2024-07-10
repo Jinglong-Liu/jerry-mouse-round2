@@ -43,10 +43,13 @@ public class HttpSessionWrapper implements HttpSession {
 
     private HttpSessionData sessionData;
 
+    private boolean isNew;
+
     public HttpSessionWrapper() {
     }
 
     public void init(HttpServletRequest request) {
+        this.isNew = true;
         this.request = request;
         this.createTimeMillis = System.currentTimeMillis();
         this.lastAccessedTime = System.currentTimeMillis();
@@ -180,13 +183,15 @@ public class HttpSessionWrapper implements HttpSession {
         }
     }
 
+    @SessionValidCheck
     @Override
     public boolean isNew() {
-        return false;
+        return isNew;
     }
 
     public void updateLastAccessedTime() {
         this.lastAccessedTime = System.currentTimeMillis();
+        this.isNew = false;
         logger.info("session {} update last accessed time", getId());
         logger.info("currentTime = {}, expireTime = {}", TimeUtils.format(this.lastAccessedTime), this.expireTime > 0 ? TimeUtils.format(this.expireTime) : -1);
     }
@@ -217,9 +222,5 @@ public class HttpSessionWrapper implements HttpSession {
         }
         // 超时
         return 0;
-    }
-
-    public long getExpireTime() {
-        return expireTime;
     }
 }

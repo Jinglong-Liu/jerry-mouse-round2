@@ -32,7 +32,6 @@ public class ServletDispatcher implements IDispatcher {
     public void dispatch(RequestDispatcherContext context) {
         HttpServletRequest request = context.getRequest();
         JerryMouseResponse response = (JerryMouseResponse) context.getResponse();
-        //TODO: use uriPattern
         ApplicationContext applicationContext = (ApplicationContext) request.getServletContext();
         HttpServlet httpServlet = applicationContext.getServletByURI(request.getRequestURI());
         List<Filter> filterList = applicationContext.getMatchFilters(request.getRequestURI());
