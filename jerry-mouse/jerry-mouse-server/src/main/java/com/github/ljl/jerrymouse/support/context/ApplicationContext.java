@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.*;
 import javax.servlet.descriptor.JspConfigDescriptor;
 import javax.servlet.http.*;
+import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -116,12 +117,12 @@ public class ApplicationContext implements ServletContext {
 
     @Override
     public URL getResource(String path) throws MalformedURLException {
-        return null;
+        return classLoader.getResource(path);
     }
 
     @Override
     public InputStream getResourceAsStream(String path) {
-        return null;
+        return classLoader.getResourceAsStream(path);
     }
 
     @Override
@@ -137,6 +138,11 @@ public class ApplicationContext implements ServletContext {
     @Override
     public Servlet getServlet(String name) throws ServletException {
         return servletManager.getServlet(name);
+    }
+
+    public String getServletPath(String uri) {
+        Object[] pair = servletManager.getServletAndPath(uri);
+        return (String) pair[1];
     }
 
     @Deprecated
@@ -169,8 +175,17 @@ public class ApplicationContext implements ServletContext {
     }
 
     @Override
-    public String getRealPath(String path) {
-        return null;
+    public String getRealPath(String s) {
+//        if (s.startsWith("\\") || s.startsWith("/")) {
+//            s = s.substring(1);
+//        }
+//
+//        if (baseDir.endsWith("\\") || baseDir.endsWith("/")) {
+//            baseDir = baseDir.substring(0, baseDir.length() - 1);
+//        }
+//        String path = baseDir + File.separator + appName.substring(1) + File.separator + s;
+//        return path;
+        throw new MethodNotSupportException("getRealPath not support in servletContext");
     }
 
     @Override

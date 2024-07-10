@@ -13,7 +13,7 @@ public class LocalClassLoader extends ClassLoader {
         try {
             // 默认直接加载本地的 class
             return Class.forName(className);
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException | NoClassDefFoundError e) {
             return null;
         }
     }

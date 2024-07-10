@@ -123,7 +123,17 @@ public class JerryMouseRequest implements HttpServletRequest {
 
     @Override
     public String getServletPath() {
-        return null;
+        /**
+         * This method will return an empty string ("")
+         * if the servlet used to process this request was matched using the "/*" pattern.
+         */
+        String uri = getRequestURI();
+        if (Objects.isNull(uri) || uri.endsWith("/*")) {
+            return "";
+        }
+        // match
+        ApplicationContext applicationContext = (ApplicationContext) this.servletContext;
+        return applicationContext.getServletPath(uri);
     }
 
     @Override
