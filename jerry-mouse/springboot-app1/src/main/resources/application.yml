@@ -1,0 +1,10 @@
+token:
+  header: Authorization
+  secret: sjkafaffdsl;fkafkwlkeltgrgwsdasdadsdad
+  expireTime: 30
+spring:
+  redis:
+    host: localhost
+    port: 6379
+server:
+  port: 8888
