@@ -33,4 +33,10 @@
     <!-- 特定包的日志级别设置 -->
     <!-- DEBUG -> INFO ->  WARN -> ERROR -->
     <logger name="com.github.ljl.jerrymouse" level="DEBUG"/>
+    <logger name="org.springframework.boot.autoconfigure" level="INFO"/>
+    <logger name="org.springframework.data.convert" level="INFO"/>
+    <logger name="org.springframework.beans.factory" level="INFO"/>
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="io.lettuce.core" level="INFO"/>
+    <logger name="io.netty" level="INFO"/>
 </configuration>

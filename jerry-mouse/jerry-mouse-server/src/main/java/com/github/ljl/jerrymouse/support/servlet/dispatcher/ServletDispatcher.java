@@ -5,8 +5,6 @@ import com.github.ljl.jerrymouse.support.servlet.FilterChainWrapper;
 import com.github.ljl.jerrymouse.support.servlet.request.JerryMouseRequest;
 import com.github.ljl.jerrymouse.support.servlet.response.JerryMouseResponse;
 import com.github.ljl.jerrymouse.utils.HttpUtils;
-import io.netty.handler.codec.http.HttpRequest;
-import io.netty.handler.codec.http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
