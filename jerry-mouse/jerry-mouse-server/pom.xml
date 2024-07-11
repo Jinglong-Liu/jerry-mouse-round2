@@ -34,11 +34,12 @@
             <artifactId>javax.servlet-api</artifactId>
             <version>${javax.servlet.version}</version>
         </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-            <version>${io.netty.netty-all.version}</version>
-        </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>io.netty</groupId>-->
+<!--            <artifactId>netty-all</artifactId>-->
+<!--            <version>${io.netty.netty-all.version}</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.projectlombok</groupId>

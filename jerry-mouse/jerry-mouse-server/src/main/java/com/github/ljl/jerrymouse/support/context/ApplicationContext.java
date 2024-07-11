@@ -5,8 +5,11 @@ import com.github.ljl.jerrymouse.support.servlet.manager.FilterManager;
 import com.github.ljl.jerrymouse.support.servlet.manager.ListenerManager;
 import com.github.ljl.jerrymouse.support.servlet.manager.ServletManager;
 import com.github.ljl.jerrymouse.support.servlet.manager.SessionManager;
+import com.github.ljl.jerrymouse.support.servlet.registration.ApplicationFilterRegistration;
+import com.github.ljl.jerrymouse.support.servlet.registration.ApplicationServletRegistration;
 import com.github.ljl.jerrymouse.support.servlet.session.HttpSessionWrapper;
 import com.github.ljl.jerrymouse.support.servlet.session.SessionTaskManager;
+import com.github.ljl.jerrymouse.utils.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -77,7 +80,7 @@ public class ApplicationContext implements ServletContext {
     }
     @Override
     public String getContextPath() {
-        return appName;
+        return StringUtils.isEmpty(appName) ? null: appName;
     }
 
     @Override
@@ -155,23 +158,30 @@ public class ApplicationContext implements ServletContext {
     @Deprecated
     @Override
     public Enumeration<String> getServletNames() {
-        logger.error("getServletNames() is Deprecated in this version");
+        logger.error("getServletNames is Deprecated in this version");
         return Collections.emptyEnumeration();
+    }
+
+    public Collection<String> getServletPatterns(Servlet servlet) {
+        return Collections.list(servletManager.getServletPatterns(servlet));
+    }
+    public Collection<String> getServletPatterns() {
+        return Collections.list(servletManager.getServletPatterns());
     }
 
     @Override
     public void log(String msg) {
-
+        logger.info(msg);
     }
 
     @Override
     public void log(Exception exception, String msg) {
-
+        logger.error(msg, exception);
     }
 
     @Override
     public void log(String message, Throwable throwable) {
-
+        logger.error(message, throwable);
     }
 
     @Override
@@ -268,17 +278,22 @@ public class ApplicationContext implements ServletContext {
 
     @Override
     public ServletRegistration.Dynamic addServlet(String servletName, String className) {
-        return null;
+        throw new MethodNotSupportException("addServlet(servletName, className) Method Not Support");
     }
 
     @Override
     public ServletRegistration.Dynamic addServlet(String servletName, Servlet servlet) {
-        return null;
+        // s = "dispatchServlet"
+        // servlet = "DispatchServlet"
+        servletManager.register(servletName, (HttpServlet) servlet);
+        ApplicationServletRegistration registration = new ApplicationServletRegistration(this, servletName, servlet);
+        return registration;
     }
 
     @Override
-    public ServletRegistration.Dynamic addServlet(String servletName, Class<? extends Servlet> servletClass) {
-        return null;
+    public ServletRegistration.Dynamic addServlet(String servletName,
+                                                  Class <? extends Servlet> servletClass) {
+        throw new MethodNotSupportException("addServlet(servletName, className) Method Not Support");
     }
 
     @Override
@@ -303,17 +318,18 @@ public class ApplicationContext implements ServletContext {
 
     @Override
     public FilterRegistration.Dynamic addFilter(String filterName, String className) {
-        return null;
+        throw new MethodNotSupportException("addFilter(filterName, className) Method Not Support");
     }
 
     @Override
     public FilterRegistration.Dynamic addFilter(String filterName, Filter filter) {
-        return null;
+        filterManager.register(filterName, filter);
+        return new ApplicationFilterRegistration(this, filterName, filter);
     }
 
     @Override
     public FilterRegistration.Dynamic addFilter(String filterName, Class<? extends Filter> filterClass) {
-        return null;
+        throw new MethodNotSupportException("addFilter(filterName, filterClass) Method Not Support");
     }
 
     @Override
@@ -462,15 +478,15 @@ public class ApplicationContext implements ServletContext {
     public HttpServlet getServletByURI(String uri) {
         return servletManager.getServlet(uri);
     }
-    public void registerServlet(String uri, HttpServlet httpServlet) {
-        servletManager.register(uri, httpServlet);
+    public void registerServlet(String urlPattern, HttpServlet httpServlet) {
+        servletManager.register(urlPattern, httpServlet);
     }
 
     public List<Filter> getMatchFilters(String urlPattern) {
         return filterManager.getMatchFilters(urlPattern);
     }
-    public void registerFilter(String urlPattren, Filter filter) {
-        filterManager.register(urlPattren, filter);
+    public void registerFilter(String urlPattern, Filter filter) {
+        filterManager.register(urlPattern, filter);
     }
 
     public void initializeServletContextListeners() {
@@ -554,6 +570,7 @@ public class ApplicationContext implements ServletContext {
     public void changeSessionId(HttpSession session, String oldId) {
         sessionManager.changeSessionId(session, oldId);
     }
+
     private <T extends EventListener> List<T> getListenersByType(Class<T> eventType) {
         return listenerManager.getListeners()
                 .stream()

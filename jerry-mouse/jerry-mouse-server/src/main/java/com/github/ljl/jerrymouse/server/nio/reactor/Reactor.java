@@ -1,6 +1,5 @@
 package com.github.ljl.jerrymouse.server.nio.reactor;
 
-import io.netty.channel.ChannelHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
