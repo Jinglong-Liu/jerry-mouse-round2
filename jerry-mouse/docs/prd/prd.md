@@ -1,17 +1,18 @@
 ## jerry-mouse 需求文档
 
-| 版本号 | 发布日期       | 变更内容                                  | 负责人 |
-|-----|------------|---------------------------------------|-----|
-| 1.8 | 2024-07-10 | 添加 [jerry-mouse prd09.md](./prd09.md) | ljl |
-| 1.8 | 2024-07-08 | 添加 [jerry-mouse prd08.md](./prd08.md) | ljl |
-| 1.7 | 2024-07-08 | 添加 [jerry-mouse prd07.md](./prd07.md) | ljl |
-| 1.6 | 2024-07-07 | 添加 [jerry-mouse prd06.md](./prd06.md) | ljl |
-| 1.5 | 2024-07-07 | 添加 [jerry-mouse prd05.md](./prd05.md) | ljl |
-| 1.4 | 2024-07-06 | 添加 [jerry-mouse prd04.md](./prd04.md) | ljl |
-| 1.3 | 2024-07-06 | 添加 [jerry-mouse prd03.md](./prd03.md) | ljl |
-| 1.2 | 2024-07-06 | 添加 [jerry-mouse prd02.md](./prd02.md) | ljl |
-| 1.1 | 2024-07-05 | 添加 [jerry-mouse prd01.md](./prd01.md) | ljl |
-| 1.0 | 2024-07-02 | jerry-mouse prd初始版本                   | ljl |
+| 版本号  | 发布日期       | 变更内容                                  | 负责人 |
+|------|------------|---------------------------------------|-----|
+| 1.10 | 2024-07-11 | 添加 [jerry-mouse prd10.md](./prd10.md) | ljl |
+| 1.9  | 2024-07-10 | 添加 [jerry-mouse prd09.md](./prd09.md) | ljl |
+| 1.8  | 2024-07-08 | 添加 [jerry-mouse prd08.md](./prd08.md) | ljl |
+| 1.7  | 2024-07-08 | 添加 [jerry-mouse prd07.md](./prd07.md) | ljl |
+| 1.6  | 2024-07-07 | 添加 [jerry-mouse prd06.md](./prd06.md) | ljl |
+| 1.5  | 2024-07-07 | 添加 [jerry-mouse prd05.md](./prd05.md) | ljl |
+| 1.4  | 2024-07-06 | 添加 [jerry-mouse prd04.md](./prd04.md) | ljl |
+| 1.3  | 2024-07-06 | 添加 [jerry-mouse prd03.md](./prd03.md) | ljl |
+| 1.2  | 2024-07-06 | 添加 [jerry-mouse prd02.md](./prd02.md) | ljl |
+| 1.1  | 2024-07-05 | 添加 [jerry-mouse prd01.md](./prd01.md) | ljl |
+| 1.0  | 2024-07-02 | jerry-mouse prd初始版本                   | ljl |
 
 ### 1、项目背景
 
