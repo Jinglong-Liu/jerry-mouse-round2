@@ -120,30 +120,25 @@ public class JerryMouseWebServerConfig {
                         if (number < MIN_PORT || number > MAX_PORT) {
                             number = PORT;
                         }
-                        while (number <= MAX_PORT) {
-                            while (!isPortAvailable(number)) {
-                                number++;
-                            }
-                            if (Objects.equals(number, MAX_PORT + 1)) {
-                                throw new IllegalStateException("All Port over" + setPort + " are not Available!");
-                            }
-                            return number;
+                        while (number <= MAX_PORT && !isPortAvailable(number)) {
+                            number++;
                         }
+                        if (Objects.equals(number, MAX_PORT + 1)) {
+                            throw new IllegalStateException("All Port over" + setPort + " are not Available!");
+                        }
+                        return number;
                     } catch (NumberFormatException ignore) {
                         // invalid or not set port, using default 8080
                         int number = PORT;
-                        while(number <= MAX_PORT) {
-                            if (!isPortAvailable(number)) {
-                                number++;
-                            }
-                            if (Objects.equals(number, MAX_PORT + 1)) {
-                                throw new IllegalStateException("All Ports over 8080 are not Available!");
-                            }
+                        while(number <= MAX_PORT && !isPortAvailable(number)) {
+                            number++;
+                        }
+                        if (Objects.equals(number, MAX_PORT + 1)) {
+                            throw new IllegalStateException("All Ports over 8080 are not Available!");
                         }
                         return number;
                     }
                 }
-                return PORT;
             }
             private boolean isPortAvailable(int port) {
                 try (ServerSocket ignored = new ServerSocket(port)) {
