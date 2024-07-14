@@ -86,7 +86,7 @@ public class JerryMouseWebServerConfig {
                 } catch (ServletException e) {
                     e.printStackTrace();
                 }
-                server.startSpringBootApplication(PORT);
+                server.startBootApplication(PORT);
             }
 
             @Override
