@@ -39,7 +39,7 @@ public class JerryMouseBootStrap {
         logger.info("server stop");
     }
 
-    public void startSpringBootApplication(int port) {
+    public void startBootApplication(int port) {
         webServerBootStrap.start(port);
     }
     // 用于SpringBoot 嵌入式jerry-mouse
